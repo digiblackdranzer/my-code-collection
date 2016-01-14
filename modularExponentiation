@@ -1,0 +1,17 @@
+public static long modularExponentiation(long a,long b,long n)
+	{
+		long c = 0;
+		long d = 1;
+		String binRep = Long.toBinaryString(b);
+		for(long i=0;i<binRep.length();i++)
+		{
+			c = 2*c;
+			d = (d*d)%n;
+			if(binRep.charAt((int) i)=='1')
+			{
+				c++;
+				d=(d*a)%n;
+			}
+		}
+		return d;
+	}
