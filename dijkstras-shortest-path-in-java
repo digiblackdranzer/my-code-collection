@@ -1,0 +1,106 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    public static void main(String[] args) throws Exception{
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        int t = Integer.parseInt(br.readLine());
+        while(t--!=0)
+        {
+            st = new StringTokenizer(br.readLine());
+            int n = Integer.parseInt(st.nextToken());
+            int m = Integer.parseInt(st.nextToken());
+            int[][] dist = new int[n+1][n+1];
+            Node[] v = new Node[n+1];
+            HashSet<Node> hs = new HashSet<Node>();
+            for(int i=1;i<=n;i++)
+            {
+                v[i] = new Node();
+                v[i].ds = Integer.MAX_VALUE;
+                v[i].vid = i;
+                for(int j=1;j<=n;j++)
+                {
+                    if(i==j)
+                    dist[i][j] = 0;
+                    else
+                    dist[i][j] = Integer.MAX_VALUE;    
+                }
+                
+                v[i].nb = new HashSet<Node>();
+                hs.add(v[i]);
+            }    
+            
+          
+            
+            for(int i=1;i<=m;i++)
+            {
+                st = new StringTokenizer(br.readLine());
+                int x = Integer.parseInt(st.nextToken());
+                int y = Integer.parseInt(st.nextToken());
+                int r = Integer.parseInt(st.nextToken());
+                dist[y][x]=dist[x][y]=r;
+                v[x].nb.add(v[y]);
+                v[y].nb.add(v[x]);
+            }
+            int s = Integer.parseInt(br.readLine());
+            v[s].ds = 0;
+            
+            while(!hs.isEmpty())
+            {
+                int min = Integer.MAX_VALUE;
+                Node mi = null;
+                for(Node n2 : hs)
+                {
+                    if(min>n2.ds)
+                    {
+                        min = n2.ds;
+                        mi = n2;
+                    }    
+                }
+                hs.remove(mi);
+                
+                for(Node tn:mi.nb)
+                {
+                    int td = mi.ds + dist[mi.vid][tn.vid];
+                    if(td<tn.ds)
+                    tn.ds = td;    
+                }    
+                
+                
+            }
+            
+            for(int i=1;i<=n;i++)
+            {
+                
+                if(v[i].ds==0)
+                continue;
+                
+                if(v[i].ds == Integer.MAX_VALUE)
+                {
+                    System.out.print("-1 ");    
+                    continue;
+                }
+                
+                System.out.print(v[i].ds+" ");
+                
+            }    
+            
+            
+            
+            
+        }    
+    }
+}
+
+class Node
+{
+    int vid;
+    int ds;
+    HashSet<Node> nb;
+}    
