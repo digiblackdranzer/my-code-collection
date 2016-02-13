@@ -1,106 +1,113 @@
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import java.math.*;
-import java.util.regex.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.StringTokenizer;
 
-public class Solution {
 
-    public static void main(String[] args) throws Exception{
-        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-        int t = Integer.parseInt(br.readLine());
-        while(t--!=0)
-        {
-            st = new StringTokenizer(br.readLine());
-            int n = Integer.parseInt(st.nextToken());
-            int m = Integer.parseInt(st.nextToken());
-            int[][] dist = new int[n+1][n+1];
-            Node[] v = new Node[n+1];
-            HashSet<Node> hs = new HashSet<Node>();
-            for(int i=1;i<=n;i++)
-            {
-                v[i] = new Node();
-                v[i].ds = Integer.MAX_VALUE;
-                v[i].vid = i;
-                for(int j=1;j<=n;j++)
-                {
-                    if(i==j)
-                    dist[i][j] = 0;
-                    else
-                    dist[i][j] = Integer.MAX_VALUE;    
-                }
-                
-                v[i].nb = new HashSet<Node>();
-                hs.add(v[i]);
-            }    
-            
-          
-            
-            for(int i=1;i<=m;i++)
-            {
-                st = new StringTokenizer(br.readLine());
-                int x = Integer.parseInt(st.nextToken());
-                int y = Integer.parseInt(st.nextToken());
-                int r = Integer.parseInt(st.nextToken());
-                dist[y][x]=dist[x][y]=r;
-                v[x].nb.add(v[y]);
-                v[y].nb.add(v[x]);
-            }
-            int s = Integer.parseInt(br.readLine());
-            v[s].ds = 0;
-            
-            while(!hs.isEmpty())
-            {
-                int min = Integer.MAX_VALUE;
-                Node mi = null;
-                for(Node n2 : hs)
-                {
-                    if(min>n2.ds)
-                    {
-                        min = n2.ds;
-                        mi = n2;
-                    }    
-                }
-                hs.remove(mi);
-                
-                for(Node tn:mi.nb)
-                {
-                    int td = mi.ds + dist[mi.vid][tn.vid];
-                    if(td<tn.ds)
-                    tn.ds = td;    
-                }    
-                
-                
-            }
-            
-            for(int i=1;i<=n;i++)
-            {
-                
-                if(v[i].ds==0)
-                continue;
-                
-                if(v[i].ds == Integer.MAX_VALUE)
-                {
-                    System.out.print("-1 ");    
-                    continue;
-                }
-                
-                System.out.print(v[i].ds+" ");
-                
-            }    
-            
-            
-            
-            
-        }    
-    }
+public class DijkstrasAlgorithm {
+
+	public static void main(String[] args) throws Exception{
+	
+		BufferedReader br = new  BufferedReader(new InputStreamReader(System.in));
+		int t = Integer.parseInt(br.readLine());
+		while(t--!=0)
+		{
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			int nv = Integer.parseInt(st.nextToken());
+			int ne = Integer.parseInt(st.nextToken());
+			HashMap<Integer,HashSet<Integer>> hm = new HashMap<Integer,HashSet<Integer>>();
+			long[][] dist = new long[nv+1][nv+1];
+			long[] ans = new long[nv+1];
+			for(int i=1;i<=nv;i++)
+			{
+				for(int j=1;j<=nv;j++)
+				{
+					if(i==j)
+					dist[i][j] = 0;
+					else
+					dist[i][j] = Long.MAX_VALUE;	
+				}
+				
+				HashSet<Integer> tmp = new HashSet<Integer>();
+				hm.put(i,tmp);
+				ans[i] = Long.MAX_VALUE;
+			}	
+			
+			while(ne--!=0)
+			{
+				st = new StringTokenizer(br.readLine());
+				int x = Integer.parseInt(st.nextToken());
+				int y = Integer.parseInt(st.nextToken());
+				int r = Integer.parseInt(st.nextToken());
+				
+				HashSet<Integer> tmp = hm.get(x);
+				tmp.add(y);
+				hm.put(x, tmp);
+				
+				tmp = hm.get(y);
+				tmp.add(x);
+				hm.put(y, tmp);
+				
+				if(dist[x][y] > r)
+				{
+					dist[x][y] = r;
+					dist[y][x] = r;
+				}
+			}
+			
+			int s = Integer.parseInt(br.readLine());
+			ans[s] = 0;
+			
+			ArrayList<Integer> q = new ArrayList<Integer>();
+			
+			for(int i=1;i<=nv;i++)
+			q.add(i);
+			
+			while(!q.isEmpty())
+			{
+				long tmp = Long.MAX_VALUE;
+				int	 ti  = -1;
+				for(Integer i : q)
+				{
+					if(ans[i]<=tmp)
+					{
+						tmp = ans[i];
+						ti = i;
+					}
+                }	
+					q.remove((Integer)ti);
+					
+					for(Integer i1 : hm.get(ti))
+					{
+						if(ans[i1]>ans[ti]+dist[i1][ti])
+						ans[i1]=ans[ti]+dist[i1][ti];
+							
+							
+					}
+					
+				
+			}	
+			
+			for(int i=1;i<=nv;i++)
+			{
+				if(ans[i]==0)
+				continue;
+				
+				if(ans[i]==Long.MAX_VALUE || ans[i]<0)
+				{
+					System.out.print(-1+" ");
+					continue;
+				}
+				
+				System.out.print(ans[i]+" ");
+				
+			}	
+			System.out.println();
+		}	
+
+	}
+
 }
 
-class Node
-{
-    int vid;
-    int ds;
-    HashSet<Node> nb;
-}    
