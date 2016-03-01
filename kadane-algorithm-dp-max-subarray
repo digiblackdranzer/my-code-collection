@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    public static void main(String[] args) throws Exception{
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int t = Integer.parseInt(br.readLine());
+        while(t--!=0)
+        {
+            int n = Integer.parseInt(br.readLine());
+            int[] a = new int[n];
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for(int i=0;i<n;i++)
+            a[i] = Integer.parseInt(st.nextToken());
+            System.out.println(longestContSubarraySum(a)+" "+longestNonContSubarraySum(a));
+            
+        }    
+    }
+   
+    public static long longestContSubarraySum(int[] a)
+    {
+        long max_eh = a[0], max_sf =a[0];
+        for(int i=1;i<a.length;i++)
+        {
+            max_eh = (long)Math.max(a[i],max_eh+a[i]);
+            max_sf = (long)Math.max(max_sf,max_eh);
+        } 
+        
+        return max_sf;
+    }
+    
+    public static long longestNonContSubarraySum(int[] a)
+    {
+        long ans = 0;
+        for(int i=0;i<a.length;i++)
+        {
+            if(a[i]>0)
+            ans+=a[i];    
+        } 
+        
+        if(ans==0)
+        {
+            ans = a[0];
+            for(int i=1;i<a.length;i++)
+            {
+                if(a[i]>ans)
+                ans=a[i];    
+            }   
+        }
+        
+        return ans;
+    }
+    
+}
