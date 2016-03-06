@@ -1,0 +1,106 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    public static HashMap<Integer,List<Integer>> al;
+    public static void main(String[] args) throws Exception{
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        HashSet<Integer> hs = new HashSet<Integer>();
+        al = new HashMap<Integer,List<Integer>>();
+        st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        long[] sse = new long[n+1];   //Sure Shot Non breakable Edges
+        for(int i=1;i<n+1;i++)
+        {
+            sse[i] = 0;    
+            al.put(i,new ArrayList<Integer>());
+            hs.add(i);
+        }
+        ArrayList<Edge> el = new ArrayList<Edge>();
+        for(int i=0;i<m;i++)
+        {
+            st = new StringTokenizer(br.readLine());
+            int s = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
+            ArrayList<Integer> tmp = new ArrayList<Integer>(al.get(s));
+            tmp.add(d);
+            al.put(s,tmp);
+            tmp = new ArrayList<Integer>(al.get(d));
+            tmp.add(s);
+            al.put(d,tmp);
+            
+            Edge tmp2 = new Edge();
+            tmp2.s = s;
+            tmp2.d = d;
+            tmp2.brk = true;
+            el.add(tmp2);
+                        
+        }    
+        
+        for(Edge e : el)
+        {
+            if(nv(e.s)==1 || nv(e.d)==1)
+            {
+                 System.out.println("1 : "+e.s+" "+e.d);
+                e.brk=false;
+                sse[e.s]++;
+                sse[e.d]++;
+                
+                if(hs.contains(e.s))
+                hs.remove(e.s);    
+                if(hs.contains(e.d))
+                hs.remove(e.d);    
+            }    
+        }
+        
+        while(!hs.isEmpty())
+        {
+            for(Edge e : el)
+            {
+                if(!e.brk)
+                continue;    
+           
+                if((sse[e.s]%2==0 && sse[e.s]!=0) || (sse[e.d]%2==0 && sse[e.d]!=0))
+                {
+                    System.out.println("2 : "+e.s+" "+e.d);
+                    e.brk=false;
+                    sse[e.s]++;
+                    sse[e.d]++;
+                    if(hs.contains(e.s))
+                    hs.remove(e.s);    
+                    if(hs.contains(e.d))
+                    hs.remove(e.d);    
+                }    
+            }
+        }
+        long ans = 0;
+        for(Edge e : el)
+        {
+            if(e.brk)
+            ans++;    
+        }    
+        System.out.println(ans);
+           
+    }
+    
+    public static int nv(int i)
+    {
+        return al.get(i).size();
+    }
+    
+    
+}
+
+class Edge
+{
+    int s;
+    int d;
+    boolean brk; //Breakable or not
+}    
